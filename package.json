@@ -13,10 +13,19 @@
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.12",
+    "@chakra-ui/react": "^1.8.8",
+    "@choc-ui/chakra-autocomplete": "^4.22.0",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
     "@hot-loader/react-dom": "^17.0.2",
+    "date-fns": "^2.29.3",
+    "framer-motion": "^6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-hot-loader": "^4.13.1"
+    "react-hot-loader": "^4.13.1",
+    "react-query": "^3.39.2",
+    "zustand": "^4.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",

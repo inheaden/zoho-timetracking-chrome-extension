@@ -1,11 +1,14 @@
 import React from 'react';
 import { render } from 'react-dom';
+import AppContainer from '../../containers/AppContainer';
 
 import Options from './Options';
 import './index.css';
 
 render(
-  <Options title={'Settings'} />,
+  <AppContainer>
+    <Options title={'Settings'} />
+  </AppContainer>,
   window.document.querySelector('#app-container')
 );
 
