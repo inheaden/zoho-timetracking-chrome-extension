@@ -1,17 +1,31 @@
 import useAuthState from '../store/auth'
-import { Job, Response, Timelog } from './models'
+import { Job, RefreshTokenResponse, Response, Timelog } from './models'
 import { subWeeks, format } from 'date-fns'
 
 const API_BASE = 'https://people.zoho.eu/people/api'
+const REFRESH_TOKEN_URL =
+  'https://refreshtoken.oauth.timetracking.inheaden.cloud'
 
 type Action<T> = (header?: RequestInit['headers']) => Promise<T>
 
 export type Middleware<T> = (action: Action<T>) => Promise<T>
 
 export function useAPI() {
-  const { token, email } = useAuthState()
+  const { token, email, refreshToken, expiresAt, setToken, setExpiresAt } =
+    useAuthState()
 
   const middleware = (action: Action<any>) => {
+    if (refreshToken && expiresAt && expiresAt < Date.now()) {
+      return refreshAccessToken(refreshToken).then((result) => {
+        setToken(result.access_token)
+        setExpiresAt(Date.now() + result.expires_in * 1000)
+
+        return action({
+          Authorization: `Bearer ${result.access_token}`,
+        })
+      })
+    }
+
     return action({
       Authorization: `Bearer ${token}`,
     })
@@ -73,6 +87,14 @@ function pauseResumeTimer(m: Middleware<Timelog>) {
         headers
       )
     })
+}
+
+function refreshAccessToken(
+  refreshToken: string
+): Promise<RefreshTokenResponse> {
+  return fetch(`${REFRESH_TOKEN_URL}?refresh_token=${refreshToken}`).then(
+    (res) => res.json()
+  )
 }
 
 function zohoGet<T>(url: string, headers?: RequestInit['headers']) {

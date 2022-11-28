@@ -22,3 +22,8 @@ export interface Timelog {
   isCurrentlyRunning: boolean
   timelogId: string
 }
+
+export interface RefreshTokenResponse {
+  access_token: string
+  expires_in: number
+}

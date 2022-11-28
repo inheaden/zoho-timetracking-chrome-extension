@@ -1,0 +1,36 @@
+service: oauth
+useDotenv: true
+configValidationMode: off
+singleSource: false
+provider:
+  name: scaleway
+  runtime: node16 # Available node runtimes are listed in documentation
+  # Global Environment variables - used in every functions
+  env:
+    clientID: ${env:CLIENT_ID}
+    clientSecret: ${env:CLIENT_SECRET}
+    zohoOAuthBaseURL: ${env:ZOHO_OAUTH_BASE_URL}
+  scwToken: ${env:SCW_SECRET_KEY}
+  scwProject: ${env:SCW_PROJECT_ID}
+  scwRegion: ${env:SCW_REGION}
+
+plugins:
+  - serverless-scaleway-functions
+
+package:
+  patterns:
+    - '!.gitignore'
+    - '!.git/**'
+
+functions:
+  startauth:
+    handler: startauth.handle
+    env:
+      redirectUri: ${env:FUNCTION_CALLBACK}
+  authcallback:
+    handler: authcallback.handle
+    env:
+      redirectUri: ${env:FUNCTION_CALLBACK}
+      extensionUri: ${env:EXTENSION_URI}
+  refreshtoken:
+    handler: refreshtoken.handle

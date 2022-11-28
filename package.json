@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-boilerplate-react",
-  "version": "4.4.0",
-  "description": "A chrome extension boilerplate built with React 17, Webpack 5, and Webpack Dev Server 4",
+  "name": "zoho-people-browser-extension-for-time-tracking",
+  "version": "1.0.0",
+  "description": "An extension to manage your time tracking on zoho people",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.0.12",
+    "@chakra-ui/icons": "^1",
     "@chakra-ui/react": "^1.8.8",
     "@choc-ui/chakra-autocomplete": "^4.22.0",
     "@emotion/react": "^11",
