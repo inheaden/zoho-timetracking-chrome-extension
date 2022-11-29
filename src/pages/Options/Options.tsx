@@ -17,7 +17,7 @@ interface Props {
 }
 
 const Options: React.FC<Props> = ({ title }: Props) => {
-  const { token, setToken, email, setEmail, setRefreshToken, setExpiresAt } =
+  const { setToken, email, setEmail, setRefreshToken, setExpiresAt } =
     useAuthState()
 
   const [authSuccess, setAuthSuccess] = React.useState(false)
@@ -81,7 +81,8 @@ const Options: React.FC<Props> = ({ title }: Props) => {
         Authenticate with Zoho
       </Button>
       <Text fontSize="smaller" textAlign="center">
-        This can take a while to open.
+        This can take a while to open. Also reload when getting back to the
+        extension.
       </Text>
     </Flex>
   )

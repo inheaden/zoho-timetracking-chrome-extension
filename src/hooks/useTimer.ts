@@ -8,7 +8,7 @@ function useTimer() {
   const { setCurrentTimelog, setIsRunning, currentTimelog, isRunning } =
     useTimerState()
   const { startTimer, pauseResumeTimer, getCurrentlyRunningTimelog } = useAPI()
-  const { jobs } = usePeopleData()
+  const { jobs, isFetching } = usePeopleData()
   const startTimerMutation = useMutation(
     'startTimer',
     ({
@@ -95,7 +95,8 @@ function useTimer() {
     isLoading:
       startTimerMutation.isLoading ||
       pauseResumeTimerMutation.isLoading ||
-      currentlyRunningTimelog.isLoading,
+      currentlyRunningTimelog.isLoading ||
+      isFetching,
   }
 }
 

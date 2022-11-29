@@ -1,11 +1,10 @@
 import React from 'react'
 import useAuthState from '../../store/auth'
-import { Text, Flex } from '@chakra-ui/react'
+import { Text, Flex, Link } from '@chakra-ui/react'
 import './Popup.css'
-import JobSearch from '../../components/JobSearch'
-import Timelogs from '../../components/Timelogs'
 import TimerButton from '../../components/TimerButton'
 import NewTimerForm from '../../components/NewTimerForm'
+import { Config } from '../../config'
 
 const Popup = () => {
   const { token, email } = useAuthState()
@@ -30,6 +29,15 @@ const Popup = () => {
       <NewTimerForm />
       <TimerButton />
       {/* <Timelogs /> */}
+
+      <Flex gap={4}>
+        <Link fontSize={10} href={`${Config.github}/issues`} target="_blank">
+          File an issue
+        </Link>
+        <Link fontSize={10} href="https://inheaden.io" target="_blank">
+          Powered by Inheaden
+        </Link>
+      </Flex>
     </Flex>
   )
 }

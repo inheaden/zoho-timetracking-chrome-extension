@@ -1,6 +1,6 @@
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
-import { CurrentTimer, Timelog } from '../api/models'
+import { CurrentTimer } from '../api/models'
 
 interface TimerState {
   isRunning: boolean

@@ -3,7 +3,7 @@ import useJobs from './useJobs'
 import { Job as APIJob } from '../api/models'
 
 function usePeopleData() {
-  const { data, isLoading, refetch } = useJobs()
+  const { data, isLoading, refetch, isFetching } = useJobs()
 
   const [jobs, projects, clients] = useMemo<
     [Job[], Project[], Client[]]
@@ -69,6 +69,7 @@ function usePeopleData() {
     isLoading,
     refetch,
     findByName,
+    isFetching,
   }
 }
 

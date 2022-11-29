@@ -3,6 +3,7 @@ export interface Response<T> {
     result: T
     message: string
     errors?: { message: string } | { message: string }[]
+    isNextAvailable: boolean
   }
 }
 

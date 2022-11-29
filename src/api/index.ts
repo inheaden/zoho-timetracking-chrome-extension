@@ -39,7 +39,7 @@ export function useAPI() {
   }
 
   return {
-    getJobs: () => getJobs(middleware)(email!),
+    getJobs: () => getAllJobs(middleware)(email!),
     getTimelogs: () => getTimelogs(middleware)(email!),
     startTimer: (
       jobId: string,
@@ -52,10 +52,10 @@ export function useAPI() {
   }
 }
 
-function getJobs(m: Middleware<Job[]>) {
+function getAllJobs(m: Middleware<Job[]>) {
   return (assignedTo: string) =>
     m((headers) => {
-      return zohoGet<Job[]>(
+      return zohoGetAll<Job[]>(
         `${API_BASE}/timetracker/getjobs?assignedTo=${assignedTo}&jobStatus=in-progress`,
         headers
       )
@@ -133,6 +133,30 @@ function zohoGet<T>(url: string, headers?: RequestInit['headers']) {
     .then((res) => res.json() as Promise<Response<T>>)
     .then(checkForErrors)
     .then((res) => res.response.result)
+}
+
+async function zohoGetAll<T>(url: string, headers?: RequestInit['headers']) {
+  const limit = 200
+  const fetchPage = (index = 0) =>
+    fetch(`${url}&sIndex=${index}&limit=${limit}`, {
+      headers: {
+        ...headers,
+      },
+    })
+      .then((res) => res.json() as Promise<Response<T>>)
+      .then(checkForErrors)
+
+  let result = [] as any[]
+  let response = await fetchPage()
+  let index = 0
+
+  do {
+    response = await fetchPage(index * limit)
+    result = [...result, ...(response.response.result as any[])]
+    index += 1
+  } while (response.response.isNextAvailable)
+
+  return result
 }
 
 function zohoPost<T>(url: string, headers?: RequestInit['headers']) {
