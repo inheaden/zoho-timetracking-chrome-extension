@@ -23,30 +23,6 @@ const Options: React.FC<Props> = ({ title }: Props) => {
   const [authSuccess, setAuthSuccess] = React.useState(false)
   const [authClicked, setAuthClicked] = React.useState(false)
 
-  useEffect(() => {
-    const query = new URLSearchParams(window.location.search)
-    const token = query.get('access_token')
-    const refreshToken = query.get('refresh_token')
-    const expiresIn = query.get('expires_in')
-
-    console.log(
-      'token',
-      token,
-      'refreshToken',
-      refreshToken,
-      'expiresIn',
-      expiresIn
-    )
-
-    if (token && refreshToken && expiresIn) {
-      setToken(token)
-      setRefreshToken(refreshToken)
-      setExpiresAt(Date.now() + Number(expiresIn) * 1000)
-
-      setAuthSuccess(true)
-    }
-  }, [setToken, setRefreshToken, setExpiresAt])
-
   const authSuccessDisplay = (
     <Flex direction="column">
       <Text fontSize={20} textAlign="center">
@@ -65,7 +41,7 @@ const Options: React.FC<Props> = ({ title }: Props) => {
         <FormLabel>Email</FormLabel>
         <Input
           type="email"
-          value={email}
+          value={email ?? ''}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter the email of your Zoho people account"
         />
@@ -73,9 +49,34 @@ const Options: React.FC<Props> = ({ title }: Props) => {
       <Button
         isLoading={authClicked}
         loadingText="Opening..."
-        onClick={() => {
+        onClick={async () => {
           setAuthClicked(true)
-          window.location.href = Config.authenticateUrl
+
+          const redirectUri = chrome.identity.getRedirectURL()
+
+          const url = await chrome.identity.launchWebAuthFlow({
+            url: `${Config.authenticateUrl}?redirect_uri=${redirectUri}`,
+            interactive: true,
+          })
+
+          if (!url) {
+            setAuthClicked(false)
+            console.error('No url returned')
+            return
+          }
+
+          const parsedUrl = new URL(url)
+          const token = parsedUrl.searchParams.get('access_token')
+          const refreshToken = parsedUrl.searchParams.get('refresh_token')
+          const expiresIn = parsedUrl.searchParams.get('expires_in')
+
+          if (token && refreshToken && expiresIn) {
+            setToken(token)
+            setRefreshToken(refreshToken)
+            setExpiresAt(Date.now() + Number(expiresIn) * 1000)
+
+            setAuthSuccess(true)
+          }
         }}
       >
         Authenticate with Zoho

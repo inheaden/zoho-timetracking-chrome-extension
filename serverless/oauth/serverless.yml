@@ -27,10 +27,5 @@ functions:
     handler: startauth.handle
     env:
       redirectUri: ${env:FUNCTION_CALLBACK}
-  authcallback:
-    handler: authcallback.handle
-    env:
-      redirectUri: ${env:FUNCTION_CALLBACK}
-      extensionUri: ${env:EXTENSION_URI}
   refreshtoken:
     handler: refreshtoken.handle
