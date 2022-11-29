@@ -1,71 +1,30 @@
-import React, { useEffect } from 'react'
-import useTimelogs from '../../hooks/useTimelogs'
+import React from 'react'
 import useTimerState from '../../store/timer'
 import { Flex, IconButton, Text } from '@chakra-ui/react'
 import { PlusSquareIcon, CloseIcon } from '@chakra-ui/icons'
-import { useAPI } from '../../api/index'
-import { useMutation } from 'react-query'
-
-export interface Props {}
+import useTimer from '../../hooks/useTimer'
 
 /**
  *
  */
-const TimerButton = ({}: Props) => {
-  const { data } = useTimelogs()
-  const { isRunning, setIsRunning, currentTimelog, setCurrentTimelog } =
-    useTimerState()
+const TimerButton = () => {
+  const { isRunning, currentTimelog } = useTimerState()
 
-  const { pauseResumeTimer } = useAPI()
-
-  const pauseResumeTimerMutation = useMutation(
-    'pauseResumeTimer',
-    ({ timelogId, timer }: { timelogId: string; timer: 'start' | 'stop' }) =>
-      pauseResumeTimer(timelogId, timer)
-  )
-
-  useEffect(() => {
-    if (data?.length) {
-      setIsRunning(data[0].isCurrentlyRunning)
-      setCurrentTimelog(data[0])
-    }
-  }, [data, setCurrentTimelog, setIsRunning])
-
-  const handleStartTimer = async () => {
-    if (!currentTimelog) {
-      return
-    }
-
-    await pauseResumeTimerMutation.mutateAsync({
-      timelogId: currentTimelog.timelogId,
-      timer: 'start',
-    })
-    setIsRunning(true)
-  }
-
-  const handleStopTimer = async () => {
-    if (!currentTimelog) {
-      return
-    }
-
-    setIsRunning(false)
-
-    await pauseResumeTimerMutation.mutateAsync({
-      timelogId: currentTimelog.timelogId,
-      timer: 'stop',
-    })
-  }
+  const { pause, resume, isLoading } = useTimer()
 
   return (
-    <Flex alignItems="center">
+    <Flex alignItems="center" justifyContent="center" flexDirection="column">
       <IconButton
+        isLoading={isLoading}
         aria-label="Start timer"
         icon={isRunning ? <CloseIcon /> : <PlusSquareIcon />}
-        onClick={isRunning ? handleStopTimer : handleStartTimer}
+        onClick={isRunning ? pause : resume}
+        bg={isRunning ? 'red.400' : 'green.400'}
+        mb={4}
       />
-      <Flex flexDirection="column" ml="4">
-        <Text>{currentTimelog?.jobName}</Text>
-        <Text fontSize={10}>{currentTimelog?.projectName}</Text>
+      <Flex flexDirection="column" textAlign="center">
+        <Text>{currentTimelog?.jobName ?? 'No timer available right now'}</Text>
+        <Text fontSize={10}>{currentTimelog?.taskName}</Text>
       </Flex>
     </Flex>
   )

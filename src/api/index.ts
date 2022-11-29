@@ -1,10 +1,17 @@
 import useAuthState from '../store/auth'
-import { Job, RefreshTokenResponse, Response, Timelog } from './models'
+import {
+  CurrentTimer,
+  Job,
+  RefreshTokenResponse,
+  Response,
+  Timelog,
+} from './models'
 import { subWeeks, format } from 'date-fns'
+import { Config } from '../config'
+import { BillingStatus } from './models'
 
-const API_BASE = 'https://people.zoho.eu/people/api'
-const REFRESH_TOKEN_URL =
-  'https://refreshtoken.oauth.timetracking.inheaden.cloud'
+const API_BASE = Config.zohoPeopleApiBase
+const REFRESH_TOKEN_URL = Config.refreshTokenUrl
 
 type Action<T> = (header?: RequestInit['headers']) => Promise<T>
 
@@ -34,9 +41,14 @@ export function useAPI() {
   return {
     getJobs: () => getJobs(middleware)(email!),
     getTimelogs: () => getTimelogs(middleware)(email!),
-    startTimer: (jobId: string) => startTimer(middleware)(email!, jobId),
+    startTimer: (
+      jobId: string,
+      workItem: string,
+      billingStatus: BillingStatus
+    ) => startTimer(middleware)(email!, jobId, workItem, billingStatus),
     pauseResumeTimer: (timelogId: string, timer: 'start' | 'stop') =>
       pauseResumeTimer(middleware)(timelogId, timer),
+    getCurrentlyRunningTimelog: () => getCurrentlyRunningTimelog(middleware)(),
   }
 }
 
@@ -62,20 +74,35 @@ function getTimelogs(m: Middleware<Timelog[]>) {
         )}&toDate=${makeZohoDate(today)}`,
         headers
       ).then((timelogs) =>
-        timelogs.sort((a, b) => Number(b.timelogId) - Number(a.timelogId))
+        timelogs.sort((a, b) => Number(b.timeLogId) - Number(a.timeLogId))
       )
     })
 }
 
-function startTimer(m: Middleware<Timelog>) {
-  return (user: string, jobId: string) =>
+function getCurrentlyRunningTimelog(m: Middleware<CurrentTimer | undefined>) {
+  return () =>
     m((headers) => {
-      return zohoPost<Timelog>(
+      return zohoGet<CurrentTimer | undefined>(
+        `${API_BASE}/timetracker/getcurrentlyrunningtimer`,
+        headers
+      ).then((timelogs) => timelogs)
+    })
+}
+
+function startTimer(m: Middleware<Pick<Timelog, 'timeLogId'>>) {
+  return (
+    user: string,
+    jobId: string,
+    workItem: string,
+    billingStatus: BillingStatus
+  ) =>
+    m((headers) => {
+      return zohoPost<Timelog[]>(
         `${API_BASE}/timetracker/timer?user=${user}&jobId=${jobId}&workDate=${makeZohoDate(
           new Date()
-        )}&billingStatus=nonbillable&timer=start`,
+        )}&billingStatus=${billingStatus}&timer=start&workItem=${workItem}`,
         headers
-      )
+      ).then((timelogs) => timelogs[0])
     })
 }
 
@@ -104,6 +131,7 @@ function zohoGet<T>(url: string, headers?: RequestInit['headers']) {
     },
   })
     .then((res) => res.json() as Promise<Response<T>>)
+    .then(checkForErrors)
     .then((res) => res.response.result)
 }
 
@@ -115,9 +143,21 @@ function zohoPost<T>(url: string, headers?: RequestInit['headers']) {
     },
   })
     .then((res) => res.json() as Promise<Response<T>>)
+    .then(checkForErrors)
     .then((res) => res.response.result)
 }
 
 function makeZohoDate(date: Date) {
   return format(date, 'yyyy-MM-dd')
+}
+
+function checkForErrors<T>(res: Response<T>) {
+  if (res.response.errors) {
+    const errorArray = Array.isArray(res.response.errors)
+      ? res.response.errors
+      : [res.response.errors]
+    throw new Error(errorArray[0].message)
+  }
+
+  return res
 }

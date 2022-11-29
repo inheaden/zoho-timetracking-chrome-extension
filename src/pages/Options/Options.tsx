@@ -21,6 +21,7 @@ const Options: React.FC<Props> = ({ title }: Props) => {
     useAuthState()
 
   const [authSuccess, setAuthSuccess] = React.useState(false)
+  const [authClicked, setAuthClicked] = React.useState(false)
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search)
@@ -70,13 +71,18 @@ const Options: React.FC<Props> = ({ title }: Props) => {
         />
       </FormControl>
       <Button
+        isLoading={authClicked}
+        loadingText="Opening..."
         onClick={() => {
-          window.location.href =
-            'https://start.oauth.timetracking.inheaden.cloud'
+          setAuthClicked(true)
+          window.location.href = Config.authenticateUrl
         }}
       >
         Authenticate with Zoho
       </Button>
+      <Text fontSize="smaller" textAlign="center">
+        This can take a while to open.
+      </Text>
     </Flex>
   )
 

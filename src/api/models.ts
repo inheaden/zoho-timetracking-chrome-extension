@@ -1,8 +1,12 @@
 export interface Response<T> {
   response: {
     result: T
+    message: string
+    errors?: { message: string } | { message: string }[]
   }
 }
+
+export type BillingStatus = 'billable' | 'non-billable'
 
 export interface Job {
   jobId: string
@@ -11,6 +15,7 @@ export interface Job {
   projectName: string
   clientId: string
   clientName: string
+  jobBillableStatus: 'Billable' | 'Non-Billable'
 }
 
 export interface Timelog {
@@ -20,7 +25,17 @@ export interface Timelog {
   projectName: string
   clientId: string
   isCurrentlyRunning: boolean
+  timeLogId: string
+  billingStatus: BillingStatus
+  hours: string
+  taskName: string
+}
+
+export interface CurrentTimer {
+  jobId: string
+  jobName: string
   timelogId: string
+  taskName: string
 }
 
 export interface RefreshTokenResponse {

@@ -15,9 +15,13 @@ const Timelogs = ({}: Props) => {
       <Text fontSize="2xl">Past timelogs</Text>
       <Flex flexDirection="column" maxHeight="200px" overflow="auto">
         {data?.map((timelog) => (
-          <Flex key={timelog.timelogId} flexDirection="column" mb="4">
-            <Text>{timelog.jobName}</Text>
+          <Flex key={timelog.timeLogId} flexDirection="column" mb="4">
+            <Flex>
+              <Text flex={1}>{timelog.jobName}</Text>
+              <Text>{timelog.hours}</Text>
+            </Flex>
             <Text fontSize={10}>{timelog.projectName}</Text>
+            <Text fontSize={10}>{timelog.taskName}</Text>
           </Flex>
         ))}
       </Flex>

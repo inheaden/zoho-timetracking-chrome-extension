@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import useJobs from './useJobs'
+import { Job as APIJob } from '../api/models'
 
 function usePeopleData() {
   const { data, isLoading, refetch } = useJobs()
@@ -9,10 +10,10 @@ function usePeopleData() {
   >(() => {
     if (!data) return [[], [], []]
 
-    const jobs = data.map(({ jobId, jobName, ...rest }) => ({
-      id: jobId,
-      name: jobName,
-      ...rest,
+    const jobs: Job[] = data.map((job) => ({
+      id: job.jobId,
+      name: job.jobName,
+      ...job,
     }))
 
     const projects = jobs.reduce<Project[]>((acc, job) => {
@@ -78,12 +79,7 @@ export interface Entity {
   name: string
 }
 
-export interface Job extends Entity {
-  projectId: string
-  projectName: string
-  clientId: string
-  clientName: string
-}
+export interface Job extends Entity, APIJob {}
 
 export interface Project extends Entity {
   jobs: Job[]

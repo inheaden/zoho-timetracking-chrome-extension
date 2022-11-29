@@ -1,13 +1,13 @@
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Timelog } from '../api/models'
+import { CurrentTimer, Timelog } from '../api/models'
 
 interface TimerState {
   isRunning: boolean
   setIsRunning: (isRunning: boolean) => void
 
-  currentTimelog?: Timelog
-  setCurrentTimelog: (currentTimelog?: Timelog) => void
+  currentTimelog?: CurrentTimer
+  setCurrentTimelog: (currentTimelog?: CurrentTimer) => void
 }
 
 const useTimerState = create<TimerState>()(
@@ -18,7 +18,7 @@ const useTimerState = create<TimerState>()(
         set((state) => ({ ...state, isRunning })),
 
       currentTimelog: undefined,
-      setCurrentTimelog: (currentTimelog?: Timelog) =>
+      setCurrentTimelog: (currentTimelog?: CurrentTimer) =>
         set((state) => ({ ...state, currentTimelog })),
     }),
     {
