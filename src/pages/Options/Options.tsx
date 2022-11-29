@@ -1,7 +1,16 @@
 import React, { useEffect } from 'react'
 import './Options.css'
 import useAuthState from '../../store/auth'
-import { Input, Flex, Text, Button } from '@chakra-ui/react'
+import {
+  Input,
+  Flex,
+  Text,
+  Button,
+  FormControl,
+  FormLabel,
+  Link,
+} from '@chakra-ui/react'
+import { Config } from '../../config'
 
 interface Props {
   title: string
@@ -38,7 +47,7 @@ const Options: React.FC<Props> = ({ title }: Props) => {
   }, [setToken, setRefreshToken, setExpiresAt])
 
   const authSuccessDisplay = (
-    <Flex direction="column" maxWidth="500px" width="100%" padding="4">
+    <Flex direction="column">
       <Text fontSize={20} textAlign="center">
         You have successfully authenticated. You can now close this window and
         start using the extension.
@@ -47,21 +56,51 @@ const Options: React.FC<Props> = ({ title }: Props) => {
   )
 
   const authDisplay = (
-    <Flex direction="column" maxWidth="500px" width="100%" padding="4">
+    <Flex direction="column">
+      <Text fontSize="2xl" as="h1" textAlign="center" mb={4}>
+        Options
+      </Text>
+      <FormControl mb={4}>
+        <FormLabel>Email</FormLabel>
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter the email of your Zoho people account"
+        />
+      </FormControl>
       <Button
         onClick={() => {
           window.location.href =
             'https://start.oauth.timetracking.inheaden.cloud'
         }}
       >
-        Authenticate
+        Authenticate with Zoho
       </Button>
     </Flex>
   )
 
   return (
-    <Flex justifyContent="center" alignItems="center" height="100vh">
-      {authSuccess ? authSuccessDisplay : authDisplay}
+    <Flex flexDirection="column" height="100vh" alignItems="center">
+      <Flex
+        flex={1}
+        justifyContent="center"
+        maxWidth="500px"
+        width="100%"
+        padding="4"
+        flexDirection="column"
+      >
+        {authSuccess ? authSuccessDisplay : authDisplay}
+      </Flex>
+
+      <Flex p={4} gap={4}>
+        <Link href={`${Config.github}/issues`} target="_blank">
+          File an issue
+        </Link>
+        <Link href="https://inheaden.io" target="_blank">
+          Powered by Inheaden
+        </Link>
+      </Flex>
     </Flex>
   )
 }
