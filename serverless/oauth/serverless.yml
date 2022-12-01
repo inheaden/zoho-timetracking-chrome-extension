@@ -25,7 +25,15 @@ package:
 functions:
   startauth:
     handler: startauth.handle
+    minScale: 0
+    maxScale: 1
     env:
       redirectUri: ${env:FUNCTION_CALLBACK}
+    custom_domains:
+      - start.oauth.timetracking.inheaden.cloud
   refreshtoken:
     handler: refreshtoken.handle
+    minScale: 1
+    maxScale: 1
+    custom_domains:
+      - refreshtoken.oauth.timetracking.inheaden.cloud
