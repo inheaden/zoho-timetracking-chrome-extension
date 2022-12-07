@@ -82,8 +82,7 @@ const Options: React.FC<Props> = ({ title }: Props) => {
         Authenticate with Zoho
       </Button>
       <Text fontSize="smaller" textAlign="center">
-        This can take a while to open. Also reload when getting back to the
-        extension.
+        This can take a while to open.
       </Text>
     </Flex>
   )
