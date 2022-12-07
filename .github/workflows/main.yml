@@ -1,0 +1,24 @@
+# install dependencies
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: yarn install
+      - name: build extension
+        run: NODE_ENV=production yarn build
+      - name: pack extension
+        run: zip -r extension.zip build
+      - name: upload extension
+        uses: actions/upload-artifact@v2
+        with:
+          name: extension
+          path: extension.zip
