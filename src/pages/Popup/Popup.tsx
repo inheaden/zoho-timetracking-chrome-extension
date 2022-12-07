@@ -34,8 +34,16 @@ const Popup = () => {
         <Link fontSize={10} href={`${Config.github}/issues`} target="_blank">
           File an issue
         </Link>
-        <Link fontSize={10} href="https://inheaden.io" target="_blank">
+        <Link
+          fontSize={10}
+          href="https://inheaden.io"
+          target="_blank"
+          mr="auto"
+        >
           Powered by Inheaden
+        </Link>
+        <Link fontSize={10} href="https://people.zoho.eu" target="_blank">
+          Open Zoho People
         </Link>
       </Flex>
     </Flex>
