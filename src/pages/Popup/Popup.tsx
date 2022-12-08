@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import useAuthState from '../../store/auth'
 import { Text, Flex, Link, Button } from '@chakra-ui/react'
 import './Popup.css'
@@ -8,10 +8,6 @@ import { Config } from '../../config'
 
 const Popup = () => {
   const { token, email } = useAuthState()
-
-  useEffect(() => {
-    fetch('https://api.github.com/repos/inheaden/timetracker-extension')
-  }, [])
 
   if (!token || !email) {
     return (
