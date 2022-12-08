@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import useAuthState from '../../store/auth'
-import { Text, Flex, Link } from '@chakra-ui/react'
+import { Text, Flex, Link, Button } from '@chakra-ui/react'
 import './Popup.css'
 import TimerButton from '../../components/TimerButton'
 import NewTimerForm from '../../components/NewTimerForm'
@@ -9,12 +9,26 @@ import { Config } from '../../config'
 const Popup = () => {
   const { token, email } = useAuthState()
 
+  useEffect(() => {
+    fetch('https://api.github.com/repos/inheaden/timetracker-extension')
+  }, [])
+
   if (!token || !email) {
     return (
-      <Flex height="300px" justifyContent="center" alignItems="center" p="2">
+      <Flex
+        height="300px"
+        justifyContent="center"
+        alignItems="center"
+        p="2"
+        flexDirection="column"
+        gap={4}
+      >
         <Text fontSize="2xl" textAlign="center">
-          Please go to options and authenticate
+          Please go to options and authenticate.
         </Text>
+        <Link href={chrome.runtime.getURL('options.html')} target="_blank">
+          <Button>Open Options</Button>
+        </Link>
       </Flex>
     )
   }
