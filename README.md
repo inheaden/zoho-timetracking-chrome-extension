@@ -2,6 +2,11 @@
 
 This is an unofficial Chrome Extension for tracking your time with Zoho People.
 
+Download the extension here:
+* [Chrome](https://chrome.google.com/webstore/detail/zoho-people-timetracker/ohahkhlnaknnepknmnbnohladlphgloo)
+* [Firefox](https://addons.mozilla.org/en-US/firefox/addon/zoho-people-timetracker/)
+* Safari coming soon
+
 ## Features
 
 * Authentication with Zoho
