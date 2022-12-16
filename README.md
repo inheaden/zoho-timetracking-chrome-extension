@@ -1,6 +1,6 @@
-# Chrome Extension for tracking your time with Zoho People
+# Browser Extension for tracking your time with Zoho People
 
-This is an unofficial Chrome Extension for tracking your time with Zoho People.
+This is an unofficial Browser Extension for tracking your time with Zoho People.
 
 Download the extension here:
 * [Chrome](https://chrome.google.com/webstore/detail/zoho-people-timetracker/ohahkhlnaknnepknmnbnohladlphgloo)
