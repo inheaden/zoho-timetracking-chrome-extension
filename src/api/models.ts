@@ -26,10 +26,11 @@ export interface Timelog {
   projectName: string
   clientId: string
   isCurrentlyRunning: boolean
-  timeLogId: string
+  timelogId: string
   billingStatus: BillingStatus
   hours: string
   taskName: string
+  workDate: string
 }
 
 export interface CurrentTimer {

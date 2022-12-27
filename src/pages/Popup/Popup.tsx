@@ -1,10 +1,11 @@
+import { Button, Flex, Link, Text } from '@chakra-ui/react'
 import React from 'react'
-import useAuthState from '../../store/auth'
-import { Text, Flex, Link, Button } from '@chakra-ui/react'
-import './Popup.css'
-import TimerButton from '../../components/TimerButton'
 import NewTimerForm from '../../components/NewTimerForm'
+import Timelogs from '../../components/Timelogs'
+import TimerButton from '../../components/TimerButton'
 import { Config } from '../../config'
+import useAuthState from '../../store/auth'
+import './Popup.css'
 
 const Popup = () => {
   const { token, email } = useAuthState()
@@ -38,7 +39,7 @@ const Popup = () => {
     >
       <NewTimerForm />
       <TimerButton />
-      {/* <Timelogs /> */}
+      <Timelogs />
 
       <Flex gap={4}>
         <Link fontSize={10} href={`${Config.github}/issues`} target="_blank">

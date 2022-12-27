@@ -69,7 +69,7 @@ function useTimer() {
       setCurrentTimelog({
         jobId,
         jobName: job.jobName,
-        timelogId: timelog.timeLogId,
+        timelogId: (timelog as any).timeLogId,
         taskName: task,
       })
       setIsRunning(true)
@@ -100,10 +100,42 @@ function useTimer() {
     setIsRunning(true)
   }
 
+  const resumePast = async (jobId: string, task: string, timeLogId: string) => {
+    if (isRunning) {
+      if (currentTimelog?.timelogId === timeLogId) {
+        await pauseResumeTimerMutation.mutateAsync({
+          timelogId: timeLogId,
+          timer: 'stop',
+        })
+
+        setIsRunning(false)
+      }
+
+      return
+    }
+
+    const job = jobs.find((j) => j.jobId === jobId)
+
+    setCurrentTimelog({
+      jobId,
+      jobName: job!.jobName,
+      timelogId: timeLogId,
+      taskName: task,
+    })
+
+    await pauseResumeTimerMutation.mutateAsync({
+      timelogId: timeLogId,
+      timer: 'start',
+    })
+
+    setIsRunning(true)
+  }
+
   return {
     startNew,
     pause,
     resume,
+    resumePast,
     isLoading:
       startTimerMutation.isLoading ||
       pauseResumeTimerMutation.isLoading ||

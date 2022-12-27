@@ -6,7 +6,7 @@ import {
   Response,
   Timelog,
 } from './models'
-import { subWeeks, format } from 'date-fns'
+import { subWeeks, format, addDays } from 'date-fns'
 import { Config } from '../config'
 import { BillingStatus } from './models'
 
@@ -66,7 +66,7 @@ function getTimelogs(m: Middleware<Timelog[]>) {
   return (assignedTo: string) =>
     m((headers) => {
       const lastWeek = subWeeks(new Date(), 1)
-      const today = new Date()
+      const today = addDays(new Date(), 7)
 
       return zohoGet<Timelog[]>(
         `${API_BASE}/timetracker/gettimelogs?user=${assignedTo}&fromDate=${makeZohoDate(
@@ -74,7 +74,7 @@ function getTimelogs(m: Middleware<Timelog[]>) {
         )}&toDate=${makeZohoDate(today)}`,
         headers
       ).then((timelogs) =>
-        timelogs.sort((a, b) => Number(b.timeLogId) - Number(a.timeLogId))
+        timelogs.sort((a, b) => Number(b.timelogId) - Number(a.timelogId))
       )
     })
 }
@@ -89,7 +89,7 @@ function getCurrentlyRunningTimelog(m: Middleware<CurrentTimer | undefined>) {
     })
 }
 
-function startTimer(m: Middleware<Pick<Timelog, 'timeLogId'>>) {
+function startTimer(m: Middleware<Pick<Timelog, 'timelogId'>>) {
   return (
     user: string,
     jobId: string,
