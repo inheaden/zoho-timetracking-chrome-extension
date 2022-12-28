@@ -26,8 +26,13 @@ function useTimer() {
   )
   const pauseResumeTimerMutation = useMutation(
     'pauseResumeTimer',
-    ({ timelogId, timer }: { timelogId: string; timer: 'start' | 'stop' }) =>
-      pauseResumeTimer(timelogId, timer)
+    ({
+      timelogId,
+      timer,
+    }: {
+      timelogId: string
+      timer: 'start' | 'stop' | 'pause'
+    }) => pauseResumeTimer(timelogId, timer)
   )
 
   const currentlyRunningTimelog = useQuery(
@@ -69,7 +74,7 @@ function useTimer() {
       setCurrentTimelog({
         jobId,
         jobName: job.jobName,
-        timelogId: (timelog as any).timeLogId,
+        timelogId: timelog.timeLogId,
         taskName: task,
       })
       setIsRunning(true)

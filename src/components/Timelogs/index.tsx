@@ -1,7 +1,7 @@
-import { Flex, Text } from '@chakra-ui/react'
+import { Flex, Text, useToast } from '@chakra-ui/react'
 import { differenceInSeconds } from 'date-fns'
-import React, { useCallback, useMemo } from 'react'
-import { Timelog } from '../../api/models'
+import React, { useMemo } from 'react'
+import { TimelogExtra } from '../../api/models'
 import useTimelogs from '../../hooks/useTimelogs'
 import useTimer from '../../hooks/useTimer'
 import useTimerState from '../../store/timer'
@@ -14,7 +14,7 @@ export interface Props {}
  *
  */
 const Timelogs = ({}: Props) => {
-  const { data } = useTimelogs()
+  const { data, refetch } = useTimelogs()
 
   const timelogs = useMemo(() => {
     return (data ?? [])?.reverse()
@@ -30,7 +30,7 @@ const Timelogs = ({}: Props) => {
         style={{ paddingRight: 20, paddingLeft: 20 }}
       >
         {timelogs?.map((timelog) => (
-          <TimelogItem timelog={timelog} />
+          <TimelogItem timelog={timelog} onAction={() => refetch()} />
         ))}
       </Flex>
     </Flex>
@@ -39,27 +39,26 @@ const Timelogs = ({}: Props) => {
 
 export default Timelogs
 
-const TimelogItem = ({ timelog }: { timelog: Timelog }) => {
+export interface TimelogItemProps {
+  timelog: TimelogExtra
+  onAction?(): void
+}
+
+const TimelogItem = ({ timelog, onAction }: TimelogItemProps) => {
   const { resumePast } = useTimer()
+  const toast = useToast()
   const { isRunning, currentTimelog } = useTimerState()
 
-  const handleStart = async (e: Timelog) => {
-    await resumePast(e.jobId, e.taskName, e.timelogId)
-  }
+  const actionButton = useMemo(() => {
+    if (isRunning && currentTimelog?.timelogId === timelog?.timelogId) {
+      return <PauseButtonIcon />
+    }
 
-  const actionButton = useCallback(
-    (timeLog: string | undefined) => {
-      if (isRunning && currentTimelog?.timelogId === timeLog) {
-        return <PauseButtonIcon />
-      }
+    return <PlayButtonIcon />
+  }, [isRunning, currentTimelog, timelog?.timelogId])
 
-      return <PlayButtonIcon />
-    },
-    [isRunning, currentTimelog]
-  )
-
-  const doNotShowButton = useCallback((e: Timelog) => {
-    const workDate: Array<string> = e.workDate.split('.')
+  const timeHasNotElapsed = useMemo(() => {
+    const workDate: Array<string> = timelog.workDate.split('.')
     const formattedWorkDate = new Date()
 
     formattedWorkDate.setDate(Number(workDate[0]))
@@ -68,7 +67,20 @@ const TimelogItem = ({ timelog }: { timelog: Timelog }) => {
 
     const diff = differenceInSeconds(formattedWorkDate, new Date()) >= 0
     return diff
-  }, [])
+  }, [timelog])
+
+  const handleStart = async (e: TimelogExtra) => {
+    if (!timeHasNotElapsed) {
+      toast({
+        title: 'Warning',
+        description: 'You cannot resume this task',
+        status: 'error',
+      })
+      return
+    }
+    await resumePast(e.jobId, e.taskName, e.timelogId)
+    onAction?.()
+  }
 
   return (
     <Flex key={timelog.timelogId} flexDirection="column" mb="4">
@@ -77,7 +89,7 @@ const TimelogItem = ({ timelog }: { timelog: Timelog }) => {
 
         <Flex style={{ justifyContent: 'center', alignItems: 'center' }}>
           <div onClick={() => handleStart(timelog)} style={{ marginLeft: 5 }}>
-            {doNotShowButton(timelog) && actionButton(timelog?.timelogId)}
+            {timeHasNotElapsed && actionButton}
           </div>
 
           <Text>

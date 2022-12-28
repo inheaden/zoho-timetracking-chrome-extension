@@ -26,11 +26,15 @@ export interface Timelog {
   projectName: string
   clientId: string
   isCurrentlyRunning: boolean
-  timelogId: string
+  timeLogId: string
   billingStatus: BillingStatus
   hours: string
   taskName: string
   workDate: string
+}
+
+export interface TimelogExtra extends Omit<Timelog, 'timeLogId'> {
+  timelogId: string
 }
 
 export interface CurrentTimer {
