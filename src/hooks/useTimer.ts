@@ -110,7 +110,7 @@ function useTimer() {
       if (currentTimelog?.timelogId === timeLogId) {
         await pauseResumeTimerMutation.mutateAsync({
           timelogId: timeLogId,
-          timer: 'stop',
+          timer: 'pause',
         })
 
         setIsRunning(false)
