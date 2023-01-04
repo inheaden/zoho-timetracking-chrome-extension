@@ -1,7 +1,7 @@
 import { Flex, Text, useToast } from '@chakra-ui/react'
-import { differenceInSeconds } from 'date-fns'
 import React, { useMemo } from 'react'
 import { TimelogExtra } from '../../api/models'
+import { checkIfTimeForRunningATaskHasElapsed } from '../../helpers'
 import useTimelogs from '../../hooks/useTimelogs'
 import useTimer from '../../hooks/useTimer'
 import useTimerState from '../../store/timer'
@@ -58,15 +58,7 @@ const TimelogItem = ({ timelog, onAction }: TimelogItemProps) => {
   }, [isRunning, currentTimelog, timelog?.timelogId])
 
   const timeHasNotElapsed = useMemo(() => {
-    const workDate: Array<string> = timelog.workDate.split('.')
-    const formattedWorkDate = new Date()
-
-    formattedWorkDate.setDate(Number(workDate[0]))
-    formattedWorkDate.setMonth(Number(workDate[1]) - 1)
-    formattedWorkDate.setFullYear(Number(workDate[2]))
-
-    const diff = differenceInSeconds(formattedWorkDate, new Date()) >= 0
-    return diff
+    return checkIfTimeForRunningATaskHasElapsed(timelog)
   }, [timelog])
 
   const handleStart = async (e: TimelogExtra) => {
@@ -78,8 +70,7 @@ const TimelogItem = ({ timelog, onAction }: TimelogItemProps) => {
       })
       return
     }
-    await resumePast(e.jobId, e.taskName, e.timelogId)
-    onAction?.()
+    await resumePast(e, onAction)
   }
 
   return (

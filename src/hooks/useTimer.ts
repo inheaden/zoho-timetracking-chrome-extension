@@ -1,9 +1,10 @@
+import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useAPI } from '../api'
+import { BillingStatus, TimelogExtra } from '../api/models'
+import { checkIfTimeForRunningATaskHasElapsed } from '../helpers'
 import useTimerState from '../store/timer'
 import usePeopleData from './usePeopleData'
-import { BillingStatus } from '../api/models'
-import { useState } from 'react'
 
 function useTimer() {
   const { setCurrentTimelog, setIsRunning, currentTimelog, isRunning } =
@@ -105,35 +106,44 @@ function useTimer() {
     setIsRunning(true)
   }
 
-  const resumePast = async (jobId: string, task: string, timeLogId: string) => {
+  const resumePast = async (timelog: TimelogExtra, callback?: Function) => {
     if (isRunning) {
-      if (currentTimelog?.timelogId === timeLogId) {
-        await pauseResumeTimerMutation.mutateAsync({
-          timelogId: timeLogId,
-          timer: 'pause',
-        })
-
-        setIsRunning(false)
+      // Pause any running timer
+      await pauseResumeTimerMutation.mutateAsync({
+        timelogId: currentTimelog?.timelogId ?? timelog?.timelogId,
+        timer: 'pause',
+      })
+      setIsRunning(false)
+      if (currentTimelog?.timelogId === timelog?.timelogId) {
+        callback?.()
+        return
       }
-
-      return
     }
 
-    const job = jobs.find((j) => j.jobId === jobId)
+    // setTimeout prevents time overlap error
+    setTimeout(async () => {
+      const timeHasNotElapsed = checkIfTimeForRunningATaskHasElapsed(timelog)
 
-    setCurrentTimelog({
-      jobId,
-      jobName: job!.jobName,
-      timelogId: timeLogId,
-      taskName: task,
-    })
+      if (!timeHasNotElapsed) return
 
-    await pauseResumeTimerMutation.mutateAsync({
-      timelogId: timeLogId,
-      timer: 'start',
-    })
+      const job = jobs.find((j) => j.jobId === timelog.jobId)
 
-    setIsRunning(true)
+      setCurrentTimelog({
+        jobId: timelog.jobId,
+        jobName: job!.jobName,
+        timelogId: timelog.timelogId,
+        taskName: timelog.taskName,
+      })
+
+      await pauseResumeTimerMutation.mutateAsync({
+        timelogId: timelog.timelogId,
+        timer: 'start',
+      })
+
+      setIsRunning(true)
+
+      callback?.()
+    }, 1000)
   }
 
   return {
