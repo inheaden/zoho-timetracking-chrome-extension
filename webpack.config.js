@@ -147,6 +147,21 @@ var options = {
           to: path.join(__dirname, 'build'),
           force: true,
         },
+        {
+          from: 'src/assets/img/icon-active-48.png',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/icon-active-128.png',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/icon-active-16.png',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        }
       ],
     }),
     new HtmlWebpackPlugin({
