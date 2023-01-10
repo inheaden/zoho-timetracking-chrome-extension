@@ -5,9 +5,23 @@ import './Popup.css'
 import TimerButton from '../../components/TimerButton'
 import NewTimerForm from '../../components/NewTimerForm'
 import { Config } from '../../config'
+import useTimerState from "../../store/timer";
 
 const Popup = () => {
   const { token, email } = useAuthState()
+
+  // update extension icon on timer state change
+  useTimerState.subscribe(state => {
+    if (state.isRunning) {
+      chrome.action.setIcon({
+        path: {"16": "icon-active-16.png", "48": "icon-active-48.png", "128": "icon-active-128.png"}
+      });
+    } else {
+      chrome.action.setIcon({
+        path: {"16": "icon-16.png", "48": "icon-48.png", "128": "icon-128.png"}
+      });
+    }
+  })
 
   if (!token || !email) {
     return (
