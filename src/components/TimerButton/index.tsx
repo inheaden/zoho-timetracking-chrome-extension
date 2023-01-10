@@ -13,7 +13,12 @@ const TimerButton = () => {
   const { pause, resume, isLoading } = useTimer()
 
   return (
-    <Flex alignItems="center" justifyContent="center" flexDirection="column">
+    <Flex
+      alignItems="center"
+      justifyContent="center"
+      flexDirection="column"
+      mt={4}
+    >
       <IconButton
         isLoading={isLoading}
         aria-label="Start timer"

@@ -5,8 +5,9 @@ import {
   RefreshTokenResponse,
   Response,
   Timelog,
+  TimelogExtra,
 } from './models'
-import { subWeeks, format } from 'date-fns'
+import { subWeeks, format, addDays } from 'date-fns'
 import { Config } from '../config'
 import { BillingStatus } from './models'
 
@@ -46,7 +47,7 @@ export function useAPI() {
       workItem: string,
       billingStatus: BillingStatus
     ) => startTimer(middleware)(email!, jobId, workItem, billingStatus),
-    pauseResumeTimer: (timelogId: string, timer: 'start' | 'stop') =>
+    pauseResumeTimer: (timelogId: string, timer: 'start' | 'pause' | 'stop') =>
       pauseResumeTimer(middleware)(timelogId, timer),
     getCurrentlyRunningTimelog: () => getCurrentlyRunningTimelog(middleware)(),
   }
@@ -62,19 +63,19 @@ function getAllJobs(m: Middleware<Job[]>) {
     })
 }
 
-function getTimelogs(m: Middleware<Timelog[]>) {
+function getTimelogs(m: Middleware<TimelogExtra[]>) {
   return (assignedTo: string) =>
     m((headers) => {
       const lastWeek = subWeeks(new Date(), 1)
-      const today = new Date()
+      const today = addDays(new Date(), 7)
 
-      return zohoGet<Timelog[]>(
+      return zohoGet<TimelogExtra[]>(
         `${API_BASE}/timetracker/gettimelogs?user=${assignedTo}&fromDate=${makeZohoDate(
           lastWeek
         )}&toDate=${makeZohoDate(today)}`,
         headers
       ).then((timelogs) =>
-        timelogs.sort((a, b) => Number(b.timeLogId) - Number(a.timeLogId))
+        timelogs.sort((a, b) => Number(b.timelogId) - Number(a.timelogId))
       )
     })
 }
@@ -107,7 +108,7 @@ function startTimer(m: Middleware<Pick<Timelog, 'timeLogId'>>) {
 }
 
 function pauseResumeTimer(m: Middleware<Timelog>) {
-  return (timelogId: string, timer: 'start' | 'stop') =>
+  return (timelogId: string, timer: 'start' | 'stop' | 'pause') =>
     m((headers) => {
       return zohoPost<Timelog>(
         `${API_BASE}/timetracker/timer?timeLogId=${timelogId}&timer=${timer}`,

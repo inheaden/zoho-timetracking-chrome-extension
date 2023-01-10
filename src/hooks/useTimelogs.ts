@@ -6,7 +6,7 @@ function useTimelogs() {
   const { token, email } = useAuthState()
   const { getTimelogs } = useAPI()
 
-  return useQuery('timelogs', getTimelogs, {
+  return useQuery(['timelogs'], getTimelogs, {
     enabled: !!token && !!email,
   })
 }
