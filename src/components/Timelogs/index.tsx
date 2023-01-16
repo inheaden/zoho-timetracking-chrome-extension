@@ -1,7 +1,11 @@
-import { Flex, Text, useToast } from '@chakra-ui/react'
+import { Flex, Spinner, Text, useToast } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
+import { useMutation } from 'react-query'
 import { TimelogExtra } from '../../api/models'
-import { checkIfTimeForRunningATaskHasElapsed } from '../../helpers'
+import {
+  checkIfTimeForRunningATaskHasElapsed,
+  sortTimelogs,
+} from '../../helpers'
 import useTimelogs from '../../hooks/useTimelogs'
 import useTimer from '../../hooks/useTimer'
 import useTimerState from '../../store/timer'
@@ -17,7 +21,7 @@ const Timelogs = ({}: Props) => {
   const { data, refetch } = useTimelogs()
 
   const timelogs = useMemo(() => {
-    return (data ?? [])?.reverse()
+    return sortTimelogs(data ?? [])
   }, [data])
 
   return (
@@ -49,17 +53,11 @@ const TimelogItem = ({ timelog, onAction }: TimelogItemProps) => {
   const toast = useToast()
   const { isRunning, currentTimelog } = useTimerState()
 
-  const actionButton = useMemo(() => {
-    if (isRunning && currentTimelog?.timelogId === timelog?.timelogId) {
-      return <PauseButtonIcon />
-    }
-
-    return <PlayButtonIcon />
-  }, [isRunning, currentTimelog, timelog?.timelogId])
-
   const timeHasNotElapsed = useMemo(() => {
     return checkIfTimeForRunningATaskHasElapsed(timelog)
   }, [timelog])
+
+  const startALog = useMutation((e: TimelogExtra) => resumePast(e, onAction))
 
   const handleStart = async (e: TimelogExtra) => {
     if (!timeHasNotElapsed) {
@@ -70,8 +68,20 @@ const TimelogItem = ({ timelog, onAction }: TimelogItemProps) => {
       })
       return
     }
-    await resumePast(e, onAction)
+    startALog.mutate(e)
   }
+
+  const actionButton = useMemo(() => {
+    if (startALog.isLoading) {
+      return <Spinner size="sm" />
+    }
+
+    if (isRunning && currentTimelog?.timelogId === timelog?.timelogId) {
+      return <PauseButtonIcon />
+    }
+
+    return <PlayButtonIcon />
+  }, [isRunning, currentTimelog, timelog?.timelogId, startALog.isLoading])
 
   return (
     <Flex key={timelog.timelogId} flexDirection="column" mb="4">
