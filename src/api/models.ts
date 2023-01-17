@@ -30,6 +30,20 @@ export interface Timelog {
   billingStatus: BillingStatus
   hours: string
   taskName: string
+  workDate: string
+  timearr?: Array<{
+    date?: number
+    diff?: number
+    fromTime?: number
+    fromTimeInTimeFormat?: string
+    isRunning?: boolean
+    timerId?: string
+    tt_inputType?: string
+  }>
+}
+
+export interface TimelogExtra extends Omit<Timelog, 'timeLogId'> {
+  timelogId: string
 }
 
 export interface CurrentTimer {

@@ -1,25 +1,34 @@
+import { Button, Flex, Link, Text } from '@chakra-ui/react'
 import React from 'react'
-import useAuthState from '../../store/auth'
-import { Text, Flex, Link, Button } from '@chakra-ui/react'
-import './Popup.css'
-import TimerButton from '../../components/TimerButton'
 import NewTimerForm from '../../components/NewTimerForm'
+import Timelogs from '../../components/Timelogs'
+import TimerButton from '../../components/TimerButton'
 import { Config } from '../../config'
-import useTimerState from "../../store/timer";
+import useAuthState from '../../store/auth'
+import './Popup.css'
+import useTimerState from '../../store/timer'
 
 const Popup = () => {
   const { token, email } = useAuthState()
 
   // update extension icon on timer state change
-  useTimerState.subscribe(state => {
+  useTimerState.subscribe((state) => {
     if (state.isRunning) {
       chrome.action.setIcon({
-        path: {"16": "icon-active-16.png", "48": "icon-active-48.png", "128": "icon-active-128.png"}
-      });
+        path: {
+          '16': 'icon-active-16.png',
+          '48': 'icon-active-48.png',
+          '128': 'icon-active-128.png',
+        },
+      })
     } else {
       chrome.action.setIcon({
-        path: {"16": "icon-16.png", "48": "icon-48.png", "128": "icon-128.png"}
-      });
+        path: {
+          '16': 'icon-16.png',
+          '48': 'icon-48.png',
+          '128': 'icon-128.png',
+        },
+      })
     }
   })
 
@@ -52,7 +61,7 @@ const Popup = () => {
     >
       <NewTimerForm />
       <TimerButton />
-      {/* <Timelogs /> */}
+      <Timelogs />
 
       <Flex gap={4}>
         <Link fontSize={10} href={`${Config.github}/issues`} target="_blank">
