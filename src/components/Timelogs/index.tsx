@@ -1,11 +1,8 @@
-import { Flex, Spinner, Text, useToast } from '@chakra-ui/react'
+import { Flex, Spinner, Text } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { useMutation } from 'react-query'
 import { TimelogExtra } from '../../api/models'
-import {
-  checkIfTimeForRunningATaskHasElapsed,
-  sortTimelogs,
-} from '../../helpers'
+import { sortTimelogs } from '../../helpers'
 import useTimelogs from '../../hooks/useTimelogs'
 import useTimer from '../../hooks/useTimer'
 import useTimerState from '../../store/timer'
@@ -50,24 +47,11 @@ export interface TimelogItemProps {
 
 const TimelogItem = ({ timelog, onAction }: TimelogItemProps) => {
   const { resumePast } = useTimer()
-  const toast = useToast()
   const { isRunning, currentTimelog } = useTimerState()
-
-  const timeHasNotElapsed = useMemo(() => {
-    return checkIfTimeForRunningATaskHasElapsed(timelog)
-  }, [timelog])
 
   const startALog = useMutation((e: TimelogExtra) => resumePast(e, onAction))
 
   const handleStart = async (e: TimelogExtra) => {
-    if (!timeHasNotElapsed) {
-      toast({
-        title: 'Warning',
-        description: 'You cannot resume this task',
-        status: 'error',
-      })
-      return
-    }
     startALog.mutate(e)
   }
 
@@ -90,7 +74,7 @@ const TimelogItem = ({ timelog, onAction }: TimelogItemProps) => {
 
         <Flex style={{ justifyContent: 'center', alignItems: 'center' }}>
           <div onClick={() => handleStart(timelog)} style={{ marginLeft: 5 }}>
-            {timeHasNotElapsed && actionButton}
+            {actionButton}
           </div>
 
           <Text>

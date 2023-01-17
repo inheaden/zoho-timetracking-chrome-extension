@@ -122,11 +122,14 @@ function useTimer() {
 
     // setTimeout prevents time overlap error
     setTimeout(async () => {
+      const job = jobs.find((j) => j.jobId === timelog.jobId)
       const timeHasNotElapsed = checkIfTimeForRunningATaskHasElapsed(timelog)
 
-      if (!timeHasNotElapsed) return
-
-      const job = jobs.find((j) => j.jobId === timelog.jobId)
+      if (!timeHasNotElapsed) {
+        await startNew(job?.id!, timelog.taskName, timelog.billingStatus)
+        callback?.()
+        return
+      }
 
       setCurrentTimelog({
         jobId: timelog.jobId,
